@@ -83,7 +83,7 @@ sudo apt-get install -y nginx
 # Set up nginx as proxy
 cp myapp /tmp/$APPNAME
 sudo cp /tmp/$APPNAME /etc/nginx/sites-available/.
-sudo ln -nfs /etc/nginx/sites-available/$APPNAME /etc/nginx/sites-enabled/$MYAPP
+sudo ln -nfs /etc/nginx/sites-available/$APPNAME /etc/nginx/sites-enabled/$APPNAME
 sudo systemctl restart nginx
 
 # Start the app again
