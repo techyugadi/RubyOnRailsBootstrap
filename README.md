@@ -8,4 +8,9 @@ By default, mysql root password is blank, but it can be set in `config/database.
 A simple virtual host configuration file is created for nginx according to the app name chosen.
 
 A simple Ruby on Rails app is started on port 3000, and can be accessed through the URL: `http://localhost:3000`. 
-To access the same app through nginx, the URL is: `http://127.0.0.1`. In production, the IP address of fully qualified domain name of the host may be supplied.
+
+To access the same app through nginx, the URL is: `http://127.0.0.1`.
+
+![RoR Application Home Page](https://github.com/techyugadi/RubyOnRailsBootstrap/blob/master/ror.png)
+
+In production, the IP address or fully qualified domain name of the host may be supplied.
