@@ -15,12 +15,12 @@ APPNAME=myapp
 sudo yum install -y curl
 
 # Install Node.js for Javascript compilation required by RoR
-yum install -y gcc-c++ make
+sudo yum install -y gcc-c++ make
 curl -sL https://rpm.nodesource.com/setup_$NODEJS_VER.x | sudo -E bash -
 sudo yum install -y nodejs
 
 # Install pre-requisite packages
-sudo yum install -y git-core zlib zlib-devel gcc-c++ patch readline readline-devel libyaml-devel libffi-devel openssl-devel make bzip2 autoconf automake libtool bison curl sqlite-devel
+sudo yum install -y git-core zlib zlib-devel gcc-c++ patch readline readline-devel libyaml-devel libffi-devel openssl-devel make bzip2 autoconf automake libtool bison
 
 # Install Ruby using rbenv
 cd
@@ -46,12 +46,13 @@ gem install rails -v $RAILS_VER
 rbenv rehash
 
 # Install MySQL
-sudo yum localinstall https://dev.mysql.com/get/mysql_$MYSQL_VER-community-release-el7-1.noarch.rpm
-sudo yum update
+sudo yum localinstall -y https://dev.mysql.com/get/mysql_$MYSQL_VER-community-release-el7-1.noarch.rpm
+sudo yum update -y
 sudo yum install -y mysql-server
 sudo systemctl start mysqld
 sudo systemctl enable mysqld
 # Install mysql2 gem
+sudo yum install -y mysql-devel
 gem install mysql2
 rbenv rehash
 
@@ -65,6 +66,8 @@ rails new $APPNAME -d mysql
 cd $APPNAME
 rake db:create
 
+sudo yum install -y yarn
+rails webpacker:install
 # Start the app
 rails server -d
 
@@ -80,7 +83,7 @@ else
 fi
 
 # Install nginx
-sudo yum install epel-release
+sudo yum install -y epel-release
 sudo yum install -y nginx
 sudo systemctl start nginx
 sudo systemctl enable nginx
