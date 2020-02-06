@@ -118,7 +118,7 @@ cd $appdir
 rails server -d
 
 # Check the HTTP Status Code through nginx
-status_nginx=`curl -s -w "%{http_code}\n" http://127.0.0.1:3000 -o /dev/null`
+status_nginx=`curl -s -w "%{http_code}\n" http://127.0.0.1 -o /dev/null`
 
 if [ $status_nginx == "200" ]; then
   echo "Nginx proxy working"
