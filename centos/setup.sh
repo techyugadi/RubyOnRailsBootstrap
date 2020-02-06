@@ -12,6 +12,8 @@ RAILS_VER=6.0.1
 MYSQL_VER=80
 APPNAME=myapp
 
+scriptdir=`pwd`
+
 sudo yum install -y curl
 
 # Install Node.js for Javascript compilation required by RoR
@@ -64,6 +66,7 @@ sudo mysql --user="root" --password="" --execute="FLUSH PRIVILEGES"
 rails new $APPNAME -d mysql
 # Initialize the database
 cd $APPNAME
+appdir=`pwd`
 rake db:create
 
 sudo yum install -y yarn
@@ -89,11 +92,13 @@ sudo systemctl start nginx
 sudo systemctl enable nginx
 
 # Set up nginx as proxy
+cd $scriptdir
 cp myapp /tmp/$APPNAME
 sudo cp /tmp/$APPNAME /etc/nginx/conf.d/.
 sudo systemctl restart nginx
 
 # Start the app again
+cd $appdir
 rails server -d
 
 # Check the HTTP Status Code through nginx
