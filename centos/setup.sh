@@ -12,6 +12,9 @@ RAILS_VER=6.0.1
 MYSQL_VER=80
 APPNAME=myapp
 
+# Choose a strong mysql root password
+MYPASS=Mysql12_
+
 scriptdir=`dirname "$(readlink -f "$0")"`
 
 sudo yum install -y curl
@@ -58,15 +61,27 @@ sudo yum install -y mysql-devel
 gem install mysql2
 rbenv rehash
 
-# Ensure MySQL is accessible to Rails app using default (blank) password
-sudo mysql --user="root" --password="" --execute="ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY ''" 
-sudo mysql --user="root" --password="" --execute="FLUSH PRIVILEGES"
+sudo systemctl stop mysqld
+sudo systemctl set-environment MYSQLD_OPTS="--skip-grant-tables --skip-networking"
+sudo systemctl start mysqld
+# First reset the root password to blank
+sudo mysql --user="root" --execute="UPDATE mysql.user SET authentication_string = '' WHERE User = 'root' AND Host = 'localhost' ; FLUSH PRIVILEGES"
+sudo systemctl stop mysqld
+sudo systemctl unset-environment MYSQLD_OPTS
+sudo systemctl start mysqld
+# Finally set root password to $MYPASS
+sudo mysql --user="root" --password="" --connect-expired-password --execute="SET PASSWORD FOR 'root'@'localhost' = '$MYPASS'"
 
 # Create an app using MySQL as database
 rails new $APPNAME -d mysql
 # Initialize the database
 cd $APPNAME
 appdir=`pwd`
+
+# First update the Mysql root password in rails db config
+passline="password: $MYPASS"
+sed -i "s/password:$/$passline/" $appdir/config/database.yml
+
 rake db:create
 
 curl --silent --location https://dl.yarnpkg.com/rpm/yarn.repo | sudo tee /etc/yum.repos.d/yarn.repo
