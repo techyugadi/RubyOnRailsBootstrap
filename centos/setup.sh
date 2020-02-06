@@ -110,7 +110,7 @@ sudo systemctl enable nginx
 # Set up nginx as proxy
 cd $scriptdir
 cp myapp /tmp/$APPNAME
-sudo cp /tmp/$APPNAME /etc/nginx/conf.d/.
+sudo cp /tmp/$APPNAME "/etc/nginx/conf.d/$APPNAME.conf"
 sudo systemctl restart nginx
 
 # Start the app again
