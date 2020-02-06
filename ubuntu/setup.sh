@@ -11,7 +11,9 @@ RUBY_VER=2.6.5
 RAILS_VER=6.0.1
 APPNAME=myapp
 
-sudo apt install curl
+scriptdir=`dirname "$(readlink -f "$0")"`
+
+sudo apt install -y curl
 
 # Install Node.js for Javascript compilation required by RoR
 sudo apt-get install -y gcc g++ make
@@ -22,18 +24,18 @@ sudo apt-get install -y nodejs
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 sudo apt-get update
-sudo apt-get install -y git-core zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev software-properties-common libffi-dev nodejs yarn
+sudo apt-get install -y git-core zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libxml2-dev libxslt1-dev libcurl4-openssl-dev software-properties-common libffi-dev yarn
 
 # Install Ruby using rbenv
 cd
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
 echo 'eval "$(rbenv init -)"' >> ~/.bashrc
-exec $SHELL
+source ~/.bashrc
 
 git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
-exec $SHELL
+source ~/.bashrc
 
 rbenv install --verbose $RUBY_VER
 rbenv global $RUBY_VER
@@ -61,6 +63,8 @@ sudo mysql --user="root" --password="" --execute="FLUSH PRIVILEGES"
 rails new $APPNAME -d mysql
 # Initialize the database
 cd $APPNAME
+appdir=`pwd`
+
 rake db:create
 
 # Start the app
@@ -81,16 +85,18 @@ fi
 sudo apt-get install -y nginx
 
 # Set up nginx as proxy
+cd $scriptdir
 cp myapp /tmp/$APPNAME
 sudo cp /tmp/$APPNAME /etc/nginx/sites-available/.
 sudo ln -nfs /etc/nginx/sites-available/$APPNAME /etc/nginx/sites-enabled/$APPNAME
 sudo systemctl restart nginx
 
 # Start the app again
+cd $appdir
 rails server -d
 
 # Check the HTTP Status Code through nginx
-status_nginx=`curl -s -w "%{http_code}\n" http://127.0.0.1:3000 -o /dev/null`
+status_nginx=`curl -s -w "%{http_code}\n" http://127.0.0.1 -o /dev/null`
 
 if [ $status_nginx == "200" ]; then
   echo "Nginx proxy working"
